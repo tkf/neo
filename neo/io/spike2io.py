@@ -431,10 +431,14 @@ class HeaderReader(object):
         if name in self.dtype.names :
             if self.dtype[name].kind == 'S':
                 if PY3K:
-                    l = np.fromstring(self.array[name].decode('iso-8859-1')[0], 'u1')    
+                    rawstr = self.array[name].decode('iso-8859-1')
                 else:
-                    l = np.fromstring(self.array[name][0], 'u1')
-                return self.array[name][1:l+1]
+                    rawstr = self.array[name]
+                if rawstr:
+                    l = np.fromstring(rawstr[0], 'u1')
+                    return rawstr[1:l+1]
+                else:
+                    return ''
             else:
                 return self.array[name]
         else :
@@ -443,13 +447,9 @@ class HeaderReader(object):
         return self.array.dtype.names
     
     def __repr__(self):
-        s = 'HEADER'
-        for name in self.dtype.names :
-            #~ if self.dtype[name].kind != 'S' :    
-                s += name + self.__getattr__(name)
-        return s
-    
-                
+        return 'HEADER{0}'.format(''.join(
+            '{0}{1}'.format(name, self.__getattr__(name))
+            for name in self.dtype.names))
     
     def __add__(self, header2):
 #        print 'add' , self.dtype, header2.dtype
