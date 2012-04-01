@@ -356,7 +356,7 @@ class Spike2IO(BaseIO):
                 ea.times = alltimes
                 if channelHeader.kind >= 5:
                     # Spike2 marker is closer to label sens of neo
-                    ea.labels = alltrigs['marker'].astype('S')
+                    ea.labels = alltrigs['marker'].view('U1')
                 if channelHeader.kind == 8:
                     ea.annotate(extra_labels = alltrigs['label'])
                 return ea
